@@ -1,7 +1,14 @@
 import React from "react";
 import "./Search.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faSortDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faSortDown,
+  faKey,
+  faChalkboard,
+  faArrowLeft,
+  faArrowRight
+} from "@fortawesome/free-solid-svg-icons";
 import { Table } from "reactstrap";
 import { GetSearchResult, SafeValue } from "../ApiHandler/ApiHandler";
 import Spinner from "../Tools/Spinner/Spinner";
@@ -12,34 +19,93 @@ export default class Search extends React.Component {
     this.state = {
       totalEntries: 0,
       sort: "asc",
-      doesUserSearching: false,
+      tableInfoData: [],
+      isUserTyping: false,
       pagination: {
-        curr: "",
-        total: ""
-      }
+        current_page: 1,
+        next_page: null,
+        prev_page: null,
+        total_entries: 0,
+        total_pages: 1
+      },
+      searchedValue: ""
     };
+    this.searchInput = React.createRef();
   }
-  doSearch = e => {
-    var value = e.target.value;
-    this.setState({ doesUserSearching: true });
-    GetSearchResult({ search: value }, item => {
-      console.log(item);
+  //if you send a value to this function as second argument this operation called force search
+  doSearch = (searchElement, forcedValue) => {
+    let searchValue = "";
+    //checking force search
+    if (forcedValue === undefined) {
+      //operation goes here only when user starts typing
+      searchValue = searchElement.target.value;
+      this.setState({ isUserTyping: true });
+    } else {
+      searchValue = forcedValue;
+    }
+    searchValue = searchValue.toString();
+    GetSearchResult({ search: searchValue }, item => {
       if (item.success_result.success) {
         this.setState(
           {
-            doesUserSearching: false,
-            totalEntries: SafeValue(
-              item,
-              "data.meta.total_entries",
-              "number",
-              0
-            )
+            tableInfoData: SafeValue(item, "data.included", "object", []),
+            searchedValue: searchValue,
+            isUserTyping: false,
+            pagination: SafeValue(item, "data.meta", "object", {})
           },
-          () => console.log(this.state)
+          () => console.log("state:", this.state)
         );
       }
     });
   };
+  generateTableInfo = () => {
+    const { tableInfoData } = this.state;
+    const rows = [];
+    let name, art;
+    if (tableInfoData.length > 0) {
+      tableInfoData.forEach((info, idx) => {
+        name = SafeValue(info, "attributes.label", "string", "No Specified");
+        //if data of art was not reliable and true then return a default icon
+        art = SafeValue(
+          info,
+          "type",
+          "string",
+          <FontAwesomeIcon icon={faSortDown} size="1x" color="whitesmoke" />
+        );
+        rows.push(
+          <tr key={idx}>
+            <td>
+              {art === "authorization_roles" ? (
+                <FontAwesomeIcon icon={faKey} size="lg" color="grey" />
+              ) : (
+                <FontAwesomeIcon icon={faChalkboard} size="lg" color="grey" />
+              )}
+            </td>
+            <td>{name}</td>
+          </tr>
+        );
+      });
+    } else {
+      rows.push(
+        <tr key={0}>
+          <td style={{ border: "none" }}>&nbsp;</td>
+          <td>
+            <span style={{ marginLeft: "39%" }}>Kein Ergebnis</span>
+          </td>
+        </tr>
+      );
+    }
+    return rows;
+  };
+  generatePaginationItems = () => {
+    const { total_pages } = this.state.pagination;
+    const generatedItems = [];
+    for (let i = 1; i <= total_pages; i++) {
+      generatedItems.push(<span className="pageButton">{i}</span>);
+    }
+    return generatedItems;
+  };
+  handleUrl = () => {};
   doSort = () => {
     GetSearchResult({}, item => {
       if (item.success_result.success) {
@@ -88,11 +154,11 @@ export default class Search extends React.Component {
     }
   };
   componentDidMount() {
-    // this.doSearch();
+    this.doSearch(null, "");
   }
 
   render() {
-    const { totalEntries, doesUserSearching } = this.state;
+    const { isUserTyping, pagination, searchedValue } = this.state;
     return (
       <div className="Search">
         {/* Search Section Elements */}
@@ -113,15 +179,19 @@ export default class Search extends React.Component {
               type="text"
               className="searchField"
               onChange={this.doSearch}
+              ref={this.searchInput}
             />
             <span
               className={classnames(
                 "searchButton-wrapper",
-                !doesUserSearching && "active"
+                !isUserTyping && "active"
               )}
             >
-              <button disabled={doesUserSearching} onClick={this.doSearch}>
-                {doesUserSearching ? <Spinner /> : "SUCHEN"}
+              <button
+                disabled={isUserTyping}
+                onClick={() => this.doSearch(null, searchedValue)}
+              >
+                {isUserTyping ? <Spinner /> : "SUCHEN"}
               </button>
             </span>
           </div>
@@ -133,43 +203,41 @@ export default class Search extends React.Component {
         {/* Body Section */}
         <div className="searchBody-section">
           <div className="menu-section">menu section</div>
-          <div className="dataInfoTable-section">
-            <span className="resultCount">
-              {totalEntries} Ergebnisse gefunden
-            </span>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Art</th>
-                  <th>
-                    Name{" "}
-                    <FontAwesomeIcon
-                      icon={faSortDown}
-                      size="1x"
-                      color="whitesmoke"
-                    />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>icon </td>
-                  <td>title</td>
-                </tr>
-                <tr>
-                  <td>icon </td>
-                  <td>title</td>
-                </tr>
-                <tr>
-                  <td>icon </td>
-                  <td>title</td>
-                </tr>
-                <tr>
-                  <td>icon </td>
-                  <td>title</td>
-                </tr>
-              </tbody>
-            </Table>
+          <div className="contentBody-section">
+            <div className="dataInfoTable-section">
+              <span className="resultCount">
+                {pagination.total_entries} Ergebnisse gefunden
+              </span>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Art</th>
+                    <th>
+                      Name{" "}
+                      <FontAwesomeIcon
+                        icon={faSortDown}
+                        size="1x"
+                        color="whitesmoke"
+                      />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>{this.generateTableInfo()}</tbody>
+              </Table>
+              <div className="tablePagination-section">
+                <span className="prev navigation">
+                  <FontAwesomeIcon icon={faArrowLeft} size="1x" pull="left" />
+                  Vorherige
+                </span>
+                <div clasName="pagesButton-wrapper">
+                  {this.generatePaginationItems()}
+                </div>
+                <span className="next navigation">
+                  <FontAwesomeIcon icon={faArrowRight} size="1x" pull="right" />
+                  Nächste
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
