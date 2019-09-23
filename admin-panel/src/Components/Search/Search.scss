@@ -90,7 +90,60 @@ body {
   & .searchBody-section {
     display: flex;
     width: 100%;
-    height: calc(100vh - 75px);
+
     flex-wrap: wrap;
+    & .menu-section {
+      width: 23%;
+      height: calc(100vh - 75px);
+    }
+    & .dataInfoTable-section {
+      width: 77%;
+      height: calc(100vh - 75px);
+      display: flex;
+      flex-direction: column;
+      padding-left: 20px;
+      padding-top: 7%;
+      & .resultCount {
+        padding: 10px 20x;
+        font-size: 17px;
+        display: block;
+        text-align: left;
+        width: 200px;
+        padding: 10px 0;
+      }
+      & .table {
+        box-shadow: 0 0 7px -4px $dimgrey;
+        border: none;
+        border-radius: 2px;
+        width: 800px;
+        text-align: left;
+        direction: ltr;
+        & th {
+          color: $white;
+          font-size: 14px;
+          font-weight: bold;
+        }
+        & td {
+          color: $dimgrey;
+          border-right: 2px solid $lightgrey;
+        }
+        & tr {
+          & th:first-child,
+          td:first-child {
+            width: 5%;
+          }
+        }
+        & thead {
+          background-color: $skyblue;
+        }
+        & tbody {
+          & tr {
+            &:nth-child(2n + 1) {
+              background-color: $white;
+            }
+          }
+        }
+      }
+    }
   }
 }
