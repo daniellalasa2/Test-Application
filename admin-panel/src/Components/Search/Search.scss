@@ -30,8 +30,9 @@ body {
       align-items: center;
       flex-direction: row;
       & span.searchIcon-wrapper {
-        position: absolute;
+        position: relative;
         font-size: 1em;
+        margin-right: -2em;
       }
       & .searchButton-wrapper {
         position: relative;
@@ -97,50 +98,77 @@ body {
       width: 23%;
       height: calc(100vh - 75px);
     }
-    & .dataInfoTable-section {
+    & .contentBody-section {
       width: 77%;
-      height: calc(100vh - 75px);
       display: flex;
       flex-direction: column;
-      padding-left: 20px;
-      padding-top: 7%;
-      & .resultCount {
-        padding: 10px 20x;
-        font-size: 17px;
-        display: block;
-        text-align: left;
-        width: 200px;
-        padding: 10px 0;
-      }
-      & .table {
-        box-shadow: 0 0 7px -4px $dimgrey;
-        border: none;
-        border-radius: 2px;
+      & .dataInfoTable-section {
         width: 800px;
-        text-align: left;
-        direction: ltr;
-        & th {
-          color: $white;
-          font-size: 14px;
-          font-weight: bold;
+        flex-direction: column;
+        height: calc(100vh - 75px);
+        display: flex;
+        padding-left: 20px;
+        padding-top: 7%;
+        & .resultCount {
+          padding: 10px 20x;
+          font-size: 17px;
+          display: block;
+          text-align: left;
+          width: 200px;
+          padding: 10px 0;
         }
-        & td {
-          color: $dimgrey;
-          border-right: 2px solid $lightgrey;
-        }
-        & tr {
-          & th:first-child,
-          td:first-child {
-            width: 5%;
+        & .table {
+          box-shadow: 0 0 7px -4px $dimgrey;
+          border: none;
+          border-radius: 2px;
+          width: 800px;
+          text-align: left;
+          direction: ltr;
+          & th {
+            color: $white;
+            font-size: 14px;
+            font-weight: bold;
+          }
+          & td {
+            color: $dimgrey;
+            border-right: 2px solid $lightgrey;
+          }
+          & tr {
+            & th:first-child,
+            td:first-child {
+              width: 5%;
+            }
+          }
+          & thead {
+            background-color: $skyblue;
+          }
+          & tbody {
+            & tr {
+              &:nth-child(2n + 1) {
+                background-color: $white;
+              }
+            }
           }
         }
-        & thead {
-          background-color: $skyblue;
-        }
-        & tbody {
-          & tr {
-            &:nth-child(2n + 1) {
-              background-color: $white;
+        & .tablePagination-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 70px;
+          & span.navigation {
+            font-size: 18px;
+            color: $dimgrey;
+            font-weight: 400;
+            padding: 10px;
+            line-height: 1;
+            &:not(.deactive):hover {
+              background-color: rgba(100, 100, 100, 0.25);
+              border-radius: 30px;
+              cursor: pointer;
+            }
+            &.deactive {
+              color: $lightgrey;
+              cursor: not-allowed;
             }
           }
         }
