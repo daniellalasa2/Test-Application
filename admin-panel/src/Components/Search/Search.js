@@ -98,10 +98,18 @@ export default class Search extends React.Component {
     return rows;
   };
   generatePaginationItems = () => {
-    const { total_pages } = this.state.pagination;
+    const { total_pages, current_page, total_entries } = this.state.pagination;
     const generatedItems = [];
-    for (let i = 1; i <= total_pages; i++) {
-      generatedItems.push(<span className="pageButton">{i}</span>);
+    if (total_entries > 0) {
+      for (let i = 1; i <= total_pages; i++) {
+        generatedItems.push(
+          <span
+            className={classnames("pageButton", current_page === i && "active")}
+          >
+            {i}
+          </span>
+        );
+      }
     }
     return generatedItems;
   };
@@ -225,14 +233,26 @@ export default class Search extends React.Component {
                 <tbody>{this.generateTableInfo()}</tbody>
               </Table>
               <div className="tablePagination-section">
-                <span className="prev navigation">
+                <span
+                  className={classnames(
+                    "prev",
+                    "navigation",
+                    pagination.prev_page === null && "deactive"
+                  )}
+                >
                   <FontAwesomeIcon icon={faArrowLeft} size="1x" pull="left" />
                   Vorherige
                 </span>
-                <div clasName="pagesButton-wrapper">
+                <div className="pageButton-wrapper">
                   {this.generatePaginationItems()}
                 </div>
-                <span className="next navigation">
+                <span
+                  className={classnames(
+                    "prev",
+                    "navigation",
+                    pagination.next_page === null && "deactive"
+                  )}
+                >
                   <FontAwesomeIcon icon={faArrowRight} size="1x" pull="right" />
                   Nächste
                 </span>
