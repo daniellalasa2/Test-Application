@@ -36,6 +36,12 @@ body {
       & .searchButton-wrapper {
         position: relative;
         font-size: 1em;
+        &.active:hover {
+          & button {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.3);
+          }
+        }
         & button {
           background-color: transparent;
           border: none;
@@ -46,11 +52,6 @@ body {
           padding: 13px;
           outline: none;
           border-radius: 1px;
-          &:hover {
-            cursor: pointer;
-
-            background-color: rgba(255, 255, 255, 0.3);
-          }
         }
       }
       & .searchField {
