@@ -1,4 +1,5 @@
 import Config from "./Config";
+import axios from "axios";
 var _api = {
   header: {
     "content-type": "application/json"
@@ -38,7 +39,7 @@ var errorHandler = statusCode => {
   return result;
 };
 
-var GetSearchResult = params => {
+var GetSearchResult = (params, callback) => {
   axios({
     url: Config.BASE_URL,
     method: "GET",
@@ -121,4 +122,4 @@ var SafeValue = (
   }
 };
 
-export { GetSearchResult, COnfig, SafeValue };
+export { GetSearchResult, Config, SafeValue };
