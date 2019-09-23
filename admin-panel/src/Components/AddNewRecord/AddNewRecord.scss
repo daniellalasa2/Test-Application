@@ -11,17 +11,18 @@
   height: calc(100vh - 75px);
   align-items: center;
   justify-content: center;
-  & .description-col,
-  & .addNewRecord-col {
+  & > div[class$="-col"] {
     width: 50%;
     height: 100%;
     align-items: center;
     align-content: center;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   & .description-col {
     background-color: $lightgrey;
-    justify-content: center;
+
     text-align: left;
     & h1 {
       font-size: 46px;
@@ -34,5 +35,36 @@
     }
   }
   & .addNewRecord-col {
+    & > div[class$="-box"] {
+      width: 200px;
+      height: 90px;
+      min-height: 90px;
+      background-color: $white;
+      box-shadow: 0px 3px 6px -1px $dimgrey;
+      border-radius: 3px;
+      margin: 20px;
+      display: flex;
+      flex-direction: row;
+      &:hover {
+        box-shadow: 0px 6px 12px -1px $dimgrey;
+        cursor: pointer;
+      }
+      & > div[class$="-wrapper"] {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      & .icon-wrapper {
+        flex-grow: 1;
+        align-items: center;
+      }
+      & .title-wrapper {
+        flex-grow: 2;
+        text-align: left;
+        & p {
+          margin: 0;
+        }
+      }
+    }
   }
 }

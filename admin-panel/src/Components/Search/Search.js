@@ -23,7 +23,7 @@ export default class Search extends React.Component {
       totalEntries: 0,
       sort: "asc",
       tableInfoData: [],
-      isUserTyping: false,
+      isUserSearching: false,
       pageSize: 8,
       pagination: {
         current_page: 1,
@@ -43,7 +43,6 @@ export default class Search extends React.Component {
     if (searchElement !== null) {
       //operation goes here only when user starts typing
       params.search = searchElement.target.value;
-      this.setState({ isUserTyping: true });
     }
     if (params.search !== undefined) {
       params = { search: params.search };
@@ -59,13 +58,14 @@ export default class Search extends React.Component {
         ...params
       };
     }
+    this.setState({ isUserSearching: true });
     GetSearchResult({ ...params, "page[size]": pageSize }, item => {
       if (item.success_result.success) {
         this.setState(
           {
             tableInfoData: SafeValue(item, "data.included", "object", []),
             searchedValue: params.search,
-            isUserTyping: false,
+            isUserSearching: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
           () => this.updateUrl(params)
@@ -191,7 +191,7 @@ export default class Search extends React.Component {
   }
 
   render() {
-    const { isUserTyping, pagination, searchedValue, sort } = this.state;
+    const { isUserSearching, pagination, searchedValue, sort } = this.state;
     return (
       <div className="Search">
         {/* Search Section Elements */}
@@ -217,14 +217,14 @@ export default class Search extends React.Component {
             <span
               className={classnames(
                 "searchButton-wrapper",
-                !isUserTyping && "active"
+                !isUserSearching && "active"
               )}
             >
               <button
-                disabled={isUserTyping}
+                disabled={isUserSearching}
                 onClick={() => this.doSearch(null, { search: searchedValue })}
               >
-                {isUserTyping ? <Spinner /> : "SUCHEN"}
+                {isUserSearching ? <Spinner /> : "SUCHEN"}
               </button>
             </span>
           </div>
