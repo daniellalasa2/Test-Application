@@ -171,8 +171,8 @@ body {
           }
           & .pageButton-wrapper {
             display: flex;
-            flex-wrap: nowrap;
-            overflow: hidden;
+            flex-wrap: wrap;
+            justify-content: center;
             max-width: 70%;
             height: 60px;
             & span.pageButton {
