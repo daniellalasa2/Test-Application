@@ -7,6 +7,7 @@ export default class Search extends React.Component {
   constructor(props) {
     super(props);
   }
+  doSearch = () => {};
   render() {
     return (
       <div className="Search">
