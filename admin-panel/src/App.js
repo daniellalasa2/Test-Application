@@ -5,7 +5,7 @@ import Layout from "./Components/Layout/Layout";
 function App() {
   var loading = () => {
     return (
-      <div>
+      <div style={{ marginTop: "47vh", fontSize: "25px" }}>
         <strong>Loading ...</strong>
       </div>
     );
@@ -16,7 +16,7 @@ function App() {
         <React.Suspense fallback={loading()}>
           <Switch>
             <Route
-              path="/listing"
+              path="/"
               name="Layout"
               component={props => <Layout {...props} />}
             />

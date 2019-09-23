@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
   faSortDown,
+  faSortUp,
   faKey,
   faChalkboard,
   faArrowLeft,
@@ -13,6 +14,7 @@ import { Table } from "reactstrap";
 import { GetSearchResult, SafeValue } from "../ApiHandler/ApiHandler";
 import Spinner from "../Tools/Spinner/Spinner";
 import classnames from "classnames";
+import UpdateParams from "../Tools/UpdateParams/UpdateParams";
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
@@ -21,39 +23,51 @@ export default class Search extends React.Component {
       sort: "asc",
       tableInfoData: [],
       isUserTyping: false,
+      pageSize: 8,
       pagination: {
         current_page: 1,
         next_page: null,
         prev_page: null,
         total_entries: 0,
         total_pages: 1
-      },
-      searchedValue: ""
+      }
     };
     this.searchInput = React.createRef();
   }
   //if you send a value to this function as second argument this operation called force search
-  doSearch = (searchElement, forcedValue) => {
-    let searchValue = "";
+
+  doSearch = (searchElement, params = {}) => {
+    const { pageSize } = this.state;
     //checking force search
-    if (forcedValue === undefined) {
+    if (searchElement !== null) {
       //operation goes here only when user starts typing
-      searchValue = searchElement.target.value;
+      params.search = searchElement.target.value;
       this.setState({ isUserTyping: true });
-    } else {
-      searchValue = forcedValue;
     }
-    searchValue = searchValue.toString();
-    GetSearchResult({ search: searchValue }, item => {
+    if (params.search !== undefined) {
+      params = { search: params.search };
+    } else {
+      const searchValue = SafeValue(
+        this.urlParser(window.location.search),
+        "search",
+        "string",
+        ""
+      );
+      params = {
+        search: searchValue,
+        ...params
+      };
+    }
+    GetSearchResult({ ...params, "page[size]": pageSize }, item => {
       if (item.success_result.success) {
         this.setState(
           {
             tableInfoData: SafeValue(item, "data.included", "object", []),
-            searchedValue: searchValue,
+            searchedValue: params.search,
             isUserTyping: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
-          () => this.updateUrl({ search: searchValue })
+          () => this.updateUrl(params)
         );
       }
     });
@@ -105,96 +119,78 @@ export default class Search extends React.Component {
         generatedItems.push(
           <span
             key={i}
-            className={classnames("pageButton", current_page === i && "active")}
+            className="pageButton"
+            onClick={() => current_page !== i && this.doPagination(null, i)}
           >
-            {i}
+            <button className={classnames(current_page === i && "active")}>
+              {i}
+            </button>
           </span>
         );
       }
     }
     return generatedItems;
   };
-  updateUrl = data => {
-    let generatedUrl = "?";
-    const { search, sort, pagination } = data;
-    console.log(search);
-    if (search) {
-      generatedUrl = generatedUrl.concat(`search=${search}`);
-      console.log(generatedUrl);
-    }
-    if (sort) {
-      if (generatedUrl.length > 1) generatedUrl = generatedUrl.concat("&");
-      generatedUrl.concat(
-        `sort_direction=${sort.direction}&sort_type=${sort.type}`
-      );
-    }
-    if (pagination) {
-      if (generatedUrl.length > 1) generatedUrl = generatedUrl.concat("&");
-      generatedUrl = generatedUrl.concat(
-        `page[number]=${pagination.current_page}&page[size]=${pagination.total_pages}`
-      );
-    }
-    if (generatedUrl.length > 1) {
-      this.props.history.push(generatedUrl);
-      return true;
-    }
-    return false;
+
+  updateUrl = params => {
+    const newSearch = UpdateParams(params, window.location.search);
+    this.props.history.push(newSearch);
   };
-  doSort = () => {
-    GetSearchResult({}, item => {
-      if (item.success_result.success) {
-        console.log(item);
-        this.setState(
-          {
-            totalEntries: SafeValue(
-              item,
-              "data.meta.total_entries",
-              "number",
-              0
-            )
-          },
-          () => console.log(this.state)
-        );
-      }
-    });
-  };
-  doPaginate = (type, forcePage) => {
-    let pagination = false;
-    switch (type) {
-      case "next":
-        pagination = "next";
+  doSort = type => {
+    let { sort } = this.state;
+    //reversing sort direction
+    switch (sort) {
+      case "asc":
+        sort = "desc";
         break;
-      case "prev":
-        pagination = "prev";
+      case "desc":
+        sort = "asc";
         break;
       default:
-        pagination = forcePage;
+        break;
     }
-    if (!type) {
-      GetSearchResult({}, item => {
-        console.log(item);
-        if (item.success_result.success) {
-          this.setState(
-            {
-              totalEntries: SafeValue(
-                item,
-                "data.meta.total_entries",
-                "number",
-                0
-              )
-            },
-            () => console.log(this.state)
-          );
-        }
-      });
-    }
+
+    this.setState({ sort: sort }, () => {
+      this.doSearch(null, { sort_direction: sort, sort_type: type });
+    });
   };
+  doPagination = (type, page) => {
+    let {
+      current_page,
+      next_page,
+      prev_page,
+      total_pages
+    } = this.state.pagination;
+    let pagination;
+    switch (type) {
+      case "next":
+        pagination = next_page;
+        break;
+      case "prev":
+        pagination = prev_page;
+        break;
+      default:
+        pagination = page;
+    }
+    this.doSearch(null, {
+      "page[number]": pagination
+    });
+  };
+  urlParser = url => {
+    const params = new URLSearchParams(url);
+    const paramsObj = {};
+    for (const [key, value] of params.entries()) {
+      paramsObj[key] = value;
+    }
+    return paramsObj;
+  };
+
   componentDidMount() {
-    this.doSearch(null, "");
+    this.doSearch(null, this.urlParser(window.location.search));
   }
 
   render() {
-    const { isUserTyping, pagination, searchedValue } = this.state;
+    const { isUserTyping, pagination, searchedValue, sort } = this.state;
     return (
       <div className="Search">
         {/* Search Section Elements */}
@@ -225,14 +221,19 @@ export default class Search extends React.Component {
             >
               <button
                 disabled={isUserTyping}
-                onClick={() => this.doSearch(null, searchedValue)}
+                onClick={() => this.doSearch(null, { search: searchedValue })}
               >
                 {isUserTyping ? <Spinner /> : "SUCHEN"}
               </button>
             </span>
           </div>
           <div className="addNewRecord-box">
-            <a className="addNewRecord">+</a>
+            <a
+              className="addNewRecord"
+              onClick={() => this.props.history.push("/addnewrecord")}
+            >
+              +
+            </a>
           </div>
         </div>
 
@@ -248,13 +249,13 @@ export default class Search extends React.Component {
                 <thead>
                   <tr>
                     <th>Art</th>
-                    <th>
+                    <th onClick={() => this.doSort("label")} className="sort">
                       Name{" "}
-                      <FontAwesomeIcon
-                        icon={faSortDown}
-                        size="1x"
-                        color="whitesmoke"
-                      />
+                      {sort === "asc" ? (
+                        <FontAwesomeIcon icon={faSortDown} size="1x" />
+                      ) : (
+                        <FontAwesomeIcon icon={faSortUp} size="1x" />
+                      )}
                     </th>
                   </tr>
                 </thead>
@@ -262,6 +263,7 @@ export default class Search extends React.Component {
               </Table>
               <div className="tablePagination-section">
                 <span
+                  onClick={() => this.doPagination("prev")}
                   className={classnames(
                     "prev",
                     "navigation",
@@ -275,6 +277,7 @@ export default class Search extends React.Component {
                   {this.generatePaginationItems()}
                 </div>
                 <span
+                  onClick={() => this.doPagination("next")}
                   className={classnames(
                     "prev",
                     "navigation",

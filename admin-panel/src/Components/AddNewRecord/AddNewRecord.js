@@ -5,6 +5,6 @@ export default class AddNewRecord extends React.Component {
   //   super(props);
   // }
   render() {
-    return;
+    return "add new record";
   }
 }

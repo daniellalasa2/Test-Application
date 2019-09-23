@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import Routes from "../Routes/Routes";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import "./Layout.scss";
 export default class Layout extends React.Component {
   render() {

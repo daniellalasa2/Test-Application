@@ -80,7 +80,9 @@ body {
       padding: 0 37px;
       box-sizing: border-box;
       & a {
-        padding: 0px 14px 4px 14px;
+        display: block;
+        width: 60px;
+        height: 60px;
       }
       & a:hover {
         cursor: pointer;
@@ -128,6 +130,9 @@ body {
             color: $white;
             font-size: 14px;
             font-weight: bold;
+            &.sort:hover {
+              cursor: pointer;
+            }
           }
           & td {
             color: $dimgrey;
@@ -172,17 +177,31 @@ body {
             }
           }
           & .pageButton-wrapper {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            max-width: 70%;
+            height: 60px;
             & span.pageButton {
-              border-radius: 50%;
               margin: auto 5px;
-              padding: 10px 14px;
-              &:not(.active):hover {
-                background-color: rgba(255, 255, 255, 0.6);
-                cursor: pointer;
-              }
-              &.active {
-                background-color: $white;
-                box-shadow: 0 3px 6px -2px #6f6f6f;
+
+              & button {
+                border-radius: 50%;
+                border: none;
+                background-color: transparent;
+                width: 36px;
+                height: 36px;
+                text-align: center;
+                outline: none;
+                &:not(.active):hover {
+                  background-color: $white;
+                  background-color: rgba(255, 255, 255, 0.6);
+                  cursor: pointer;
+                }
+                &.active {
+                  background-color: $white;
+                  box-shadow: 0 3px 6px -2px #6f6f6f;
+                }
               }
             }
           }

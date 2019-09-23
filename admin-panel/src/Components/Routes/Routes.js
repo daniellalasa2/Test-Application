@@ -3,7 +3,6 @@ import React from "react";
 const Search = React.lazy(() => import("../Search/Search"));
 const AddNewRecord = React.lazy(() => import("../AddNewRecord/AddNewRecord"));
 const Routes = [
-  { path: "/", exact: true, name: "Home", component: null },
   {
     path: "/listing",
     name: "Listing",
