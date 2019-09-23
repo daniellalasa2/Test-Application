@@ -53,7 +53,7 @@ export default class Search extends React.Component {
             isUserTyping: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
-          () => console.log("state:", this.state)
+          () => this.updateUrl({ search: searchValue })
         );
       }
     });
@@ -104,6 +104,7 @@ export default class Search extends React.Component {
       for (let i = 1; i <= total_pages; i++) {
         generatedItems.push(
           <span
+            key={i}
             className={classnames("pageButton", current_page === i && "active")}
           >
             {i}
@@ -113,7 +114,32 @@ export default class Search extends React.Component {
     }
     return generatedItems;
   };
-  handleUrl = () => {};
+  updateUrl = data => {
+    let generatedUrl = "?";
+    const { search, sort, pagination } = data;
+    console.log(search);
+    if (search) {
+      generatedUrl = generatedUrl.concat(`search=${search}`);
+      console.log(generatedUrl);
+    }
+    if (sort) {
+      if (generatedUrl.length > 1) generatedUrl = generatedUrl.concat("&");
+      generatedUrl.concat(
+        `sort_direction=${sort.direction}&sort_type=${sort.type}`
+      );
+    }
+    if (pagination) {
+      if (generatedUrl.length > 1) generatedUrl = generatedUrl.concat("&");
+      generatedUrl = generatedUrl.concat(
+        `page[number]=${pagination.current_page}&page[size]=${pagination.total_pages}`
+      );
+    }
+    if (generatedUrl.length > 1) {
+      this.props.history.push(generatedUrl);
+      return true;
+    }
+    return false;
+  };
   doSort = () => {
     GetSearchResult({}, item => {
       if (item.success_result.success) {
@@ -132,15 +158,17 @@ export default class Search extends React.Component {
       }
     });
   };
-  doPaginate = type => {
-    let pagination_type = false;
+  doPaginate = (type, forcePage) => {
+    let pagination = false;
     switch (type) {
       case "next":
+        pagination = "next";
         break;
       case "prev":
-        break;
+        pagination = "prev";
         break;
       default:
+        pagination = forcePage;
     }
     if (!type) {
       GetSearchResult({}, item => {
