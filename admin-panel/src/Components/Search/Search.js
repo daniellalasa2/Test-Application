@@ -13,6 +13,7 @@ import {
 import { Table } from "reactstrap";
 import { GetSearchResult, SafeValue } from "../ApiHandler/ApiHandler";
 import Spinner from "../Tools/Spinner/Spinner";
+import Header from "../Layout/Header";
 import classnames from "classnames";
 import UpdateParams from "../Tools/UpdateParams/UpdateParams";
 export default class Search extends React.Component {
@@ -194,7 +195,7 @@ export default class Search extends React.Component {
     return (
       <div className="Search">
         {/* Search Section Elements */}
-        <div className="searchBar-section">
+        <Header>
           <div className="logoTitle-box">
             <strong className="logoTitle">Admin Tool</strong>
           </div>
@@ -235,7 +236,7 @@ export default class Search extends React.Component {
               +
             </a>
           </div>
-        </div>
+        </Header>
 
         {/* Body Section */}
         <div className="searchBody-section">

@@ -8,87 +8,80 @@ body {
   width: 100%;
   height: 100%;
   background-color: $lightgrey;
-  & .searchBar-section {
+  & .logoTitle-box {
+    width: 23%;
+    height: 100%;
+    display: inherit;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 30px;
+    font-size: 20px;
+    color: white;
+  }
+  & .searchField-box {
+    width: 65%;
     display: flex;
+    align-items: center;
     flex-direction: row;
-    width: 100%;
-    background-color: $shinnyblue;
-    height: 75px;
-    & .logoTitle-box {
-      width: 23%;
-      height: 100%;
-      display: inherit;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 0 30px;
-      font-size: 20px;
-      color: white;
+    & span.searchIcon-wrapper {
+      position: relative;
+      font-size: 1em;
+      margin-right: -2em;
     }
-    & .searchField-box {
-      width: 65%;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      & span.searchIcon-wrapper {
-        position: relative;
-        font-size: 1em;
-        margin-right: -2em;
-      }
-      & .searchButton-wrapper {
-        position: relative;
-        font-size: 1em;
-        &.active:hover {
-          & button {
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.3);
-          }
-        }
+    & .searchButton-wrapper {
+      position: relative;
+      font-size: 1em;
+      &.active:hover {
         & button {
-          background-color: transparent;
-          border: none;
-          font-size: 1em;
-          font-weight: bold;
-          margin-left: -100px;
-          color: $lightgrey;
-          padding: 13px;
-          outline: none;
-          border-radius: 1px;
+          cursor: pointer;
+          background-color: rgba(255, 255, 255, 0.3);
         }
       }
-      & .searchField {
-        width: 100%;
+      & button {
         background-color: transparent;
-        border-width: 0 0 1px 0;
-        border-color: $lightgrey;
-        outline: none;
-        font-size: 1.4em;
-        padding: 10px 100px 10px 10px;
-        direction: ltr;
+        border: none;
+        font-size: 1em;
+        font-weight: bold;
+        margin-left: -100px;
         color: $lightgrey;
-        padding-left: 2em;
+        padding: 13px;
+        outline: none;
+        border-radius: 1px;
       }
     }
-    & .addNewRecord-box {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
+    & .searchField {
+      width: 100%;
+      background-color: transparent;
+      border-width: 0 0 1px 0;
+      border-color: $lightgrey;
+      outline: none;
+      font-size: 1.4em;
+      padding: 10px 100px 10px 10px;
+      direction: ltr;
+      color: $lightgrey;
+      padding-left: 2em;
+    }
+  }
+  & .addNewRecord-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 
-      width: 12%;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: white;
-      padding: 0 37px;
-      box-sizing: border-box;
-      & a {
-        display: block;
-        width: 60px;
-        height: 60px;
-      }
-      & a:hover {
-        cursor: pointer;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.3);
-      }
+    width: 12%;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: white;
+    padding: 0 37px;
+    box-sizing: border-box;
+    & a {
+      display: block;
+      width: 60px;
+      height: 60px;
+    }
+    & a:hover {
+      cursor: pointer;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
     }
   }
   & .searchBody-section {

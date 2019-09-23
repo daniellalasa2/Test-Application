@@ -1,0 +1,8 @@
+@import "../../Assets/css-variables/colors.scss";
+.searchBar-section {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: $shinnyblue;
+  height: 75px;
+}

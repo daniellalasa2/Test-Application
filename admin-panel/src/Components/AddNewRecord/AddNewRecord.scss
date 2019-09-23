@@ -1,0 +1,38 @@
+@import "../../Assets/css-variables/colors.scss";
+
+.page-title {
+  margin: 24px;
+  font-size: 19px;
+  color: white;
+}
+.addNewRecord-section {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 75px);
+  align-items: center;
+  justify-content: center;
+  & .description-col,
+  & .addNewRecord-col {
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    align-content: center;
+    display: flex;
+  }
+  & .description-col {
+    background-color: $lightgrey;
+    justify-content: center;
+    text-align: left;
+    & h1 {
+      font-size: 46px;
+    }
+    & h5 {
+      font-size: 18px;
+    }
+    & section {
+      width: 430px;
+    }
+  }
+  & .addNewRecord-col {
+  }
+}
