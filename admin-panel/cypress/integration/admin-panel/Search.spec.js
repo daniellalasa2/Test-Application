@@ -9,41 +9,33 @@ function req(callback) {
   }).then(resp => {
     if (resp.status === 200 && resp.body.ok === true) {
       callback(resp);
-      return;
+      return false;
     }
-    req();
   });
 }
-context("Table Info", () => {
-  cy.visit("/listing");
-  var total_enteries = 0;
-  var elements = [];
-  req(result => {
-    total_enteries = result.meta.total_enteries;
-    elements = result.included;
-  });
-  it("Total search result is correct ", () => {
-    // https://localhost:3000/listing
-    cy.get(".Search .dataInfoTable-section .resultCount")
-      .contains(`${total_enteries} Ergebnisse gefunden`)
-      // .type() with special character sequences
-      .type("{leftarrow}{rightarrow}{uparrow}{downarrow}")
-      .type("{del}{selectall}{backspace}")
-
-      // .type() with key modifiers
-      .type("{alt}{option}") //these are equivalent
-      .type("{ctrl}{control}") //these are equivalent
-      .type("{meta}{command}{cmd}") //these are equivalent
-      .type("{shift}")
-
-      // Delay each keypress by 0.1 sec
-      .type("slow.typing@email.com", { delay: 100 })
-      .should("have.value", "slow.typing@email.com");
-
-    cy.get(".action-disabled")
-      // Ignore error checking prior to type
-      // like whether the input is visible or disabled
-      .type("disabled error checking", { force: true })
-      .should("have.value", "disabled error checking");
+context("Search", () => {
+  //check total search result count
+  describe("Table Info", () => {
+    it("Total search result count is correct", () => {
+      cy.visit("/listing");
+      // https://localhost:3000/listing
+      //.resultCount must contains api dada
+      req(res => {
+        cy.get(".Search .dataInfoTable-section .resultCount").contains(
+          `${res.data.meta.total_enteries} Ergebnisse gefunden`
+        );
+      });
+    });
+    //check generated table info rows
+    it("Generated table info rows are correct", () => {
+      req(res => {
+        //check if all the generated elements texts are equal to api returned value or not
+      });
+      cy.get(".Search .dataInfoTable-section table tbody")
+        .find("tr")
+        .should($tr => {
+          expect($tr).to.have.length(res.data.included.length);
+        });
+    });
   });
 });
