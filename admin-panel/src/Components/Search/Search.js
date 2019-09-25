@@ -24,7 +24,7 @@ export default class Search extends React.Component {
       sort: "asc",
       tableInfoData: [],
       isUserSearching: false,
-      pageSize: 8,
+      pageSize: 10,
       pagination: {
         current_page: 1,
         next_page: null,
@@ -46,7 +46,7 @@ export default class Search extends React.Component {
       params.search = searchElement.target.value;
     }
     if (params.search !== undefined) {
-      params = { search: params.search };
+      params = { search: params.search, "page[size]": pageSize };
       paramString = UpdateParams(params, {});
       this.setState({ sort: "asc" });
     } else {
@@ -58,7 +58,8 @@ export default class Search extends React.Component {
       );
       params = {
         search: searchValue,
-        ...params
+        ...params,
+        "page[size]": pageSize
       };
       paramString = UpdateParams(params, window.location.search);
     }
