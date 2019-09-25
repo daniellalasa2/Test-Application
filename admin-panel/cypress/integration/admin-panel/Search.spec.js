@@ -58,19 +58,26 @@ context("Listing", () => {
   });
 
   describe("Pagination functionality", () => {
+    //check if all pagination elemets loaded perfect or not
     it("All pagination elements generates successfuly based on search result", () => {
+      //send a base request
       cy.visit("/listing?search=p&page[size]=10");
+      //send request to compare with generated UI
       cy.request({ qs: { search: "p", "page[size]": "10" }, ...reqOptions })
         .its("body")
         .as("searchResult");
+
       cy.get("@searchResult").then(resp => {
         if (resp.meta) {
           const totalPages = resp.meta.total_pages;
           const currentPage = resp.meta.current_page;
+          //Store pagination elements
           cy.get(
             ".Search .tablePagination-section .pageButton-wrapper span"
           ).as("paginationElements");
+          //generated pagination button must have an equal length to the totalPages that came from API result
           cy.get("@paginationElements").should("have.length", totalPages);
+          //check if current requestd page is active in pageination section or not!
           cy.get("@paginationElements")
             .find(".active")
             .contains(currentPage);
@@ -92,7 +99,6 @@ context("Listing", () => {
             .find("button")
             .should("have.class", "active");
         });
-      //
       //grap result of server with page[number] param
       cy.request({
         qs: { search: "p", "page[size]": "10", "page[number]": "3" },
@@ -104,9 +110,11 @@ context("Listing", () => {
         if (resp.included) {
           const type = resp.included[0].type;
           const label = resp.included[0].attributes.label;
+          //Select the first row of table info to compare data with
           cy.get(
             ".Search .dataInfoTable-section table tbody tr:first-child"
           ).as("firstTableRow");
+          //check if clicked oagination button loads accurate table info
           cy.get("@firstTableRow").find(`td.${type}`);
           cy.get("@firstTableRow")
             .find("td.name")
@@ -114,7 +122,7 @@ context("Listing", () => {
         }
       });
     });
-
+    //url must updates after pagination
     it("Url updates successfuly rely on page number", () => {
       cy.visit("/listing?search=h");
       cy.get(".Search .tablePagination-section .pageButton-wrapper span").as(
@@ -124,17 +132,25 @@ context("Listing", () => {
       cy.get("@paginationElements")
         .eq(2)
         .click();
+      //Does Url contain page number details ?
       cy.url().should("include", "?search=h&page[size]=10&page[number]=3");
     });
   });
+
+  //Soring Tests
   describe("Sorting functionality", () => {
     it("Sort button works great and shows accurate result and updates Url sucessfuly", () => {
       cy.visit("/listing?search=h&page[size]=10");
+      //Grab and alias sort button
       cy.get(".Search .dataInfoTable-section table thead .sort").as(
         "sortButton"
       );
-      //If a pagination element was clicked , Would it take .active class ?
+      //Does sort button clickable?
+      //Click on sort button must toggles table info alphabeticaly
       cy.get("@sortButton").click();
+      //Send a requet to api with default params
+      //default sort direction after page load is ASC
+      //So request to api with a reverse sort direction
       cy.request({
         qs: {
           search: "h",
@@ -146,19 +162,22 @@ context("Listing", () => {
       })
         .its("body")
         .as("sortResult");
+      //Check if returned data is equal with generated table info rows or not !
       cy.get("@sortResult").then(resp => {
         if (resp.included) {
           const type = resp.included[0].type;
           const label = resp.included[0].attributes.label;
+          //Select the first row to compare data
           cy.get(
             ".Search .dataInfoTable-section table tbody tr:first-child"
           ).as("firstTableRow");
+          //Compare the first child of returned api data with the first row of table info and check if it's equal or not
           cy.get("@firstTableRow").find(`td.${type}`);
           cy.get("@firstTableRow")
             .find("td.name")
             .contains(label);
         }
-        //Url update after sorting
+        //Url update after sorting must wokrs
         cy.url().should(
           "include",
           "?search=h&page[size]=10&sort_direction=desc&sort_type=label"
