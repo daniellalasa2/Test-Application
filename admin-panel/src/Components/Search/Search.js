@@ -4,10 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
   faSortDown,
-<<<<<<< HEAD
   faSortUp,
-=======
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
   faKey,
   faChalkboard,
   faArrowLeft,
@@ -16,13 +13,9 @@ import {
 import { Table } from "reactstrap";
 import { GetSearchResult, SafeValue } from "../ApiHandler/ApiHandler";
 import Spinner from "../Tools/Spinner/Spinner";
-<<<<<<< HEAD
 import Header from "../Layout/Header";
 import classnames from "classnames";
 import UpdateParams from "../Tools/UpdateParams/UpdateParams";
-=======
-import classnames from "classnames";
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
@@ -30,29 +23,19 @@ export default class Search extends React.Component {
       totalEntries: 0,
       sort: "asc",
       tableInfoData: [],
-<<<<<<< HEAD
       isUserSearching: false,
       pageSize: 10,
-=======
-      isUserTyping: false,
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
       pagination: {
         current_page: 1,
         next_page: null,
         prev_page: null,
         total_entries: 0,
         total_pages: 1
-<<<<<<< HEAD
       }
-=======
-      },
-      searchedValue: ""
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
     };
     this.searchInput = React.createRef();
   }
   //if you send a value to this function as second argument this operation called force search
-<<<<<<< HEAD
 
   doSearch = (searchElement, params = {}) => {
     const { pageSize } = this.state;
@@ -82,37 +65,15 @@ export default class Search extends React.Component {
     }
     this.setState({ isUserSearching: true });
     GetSearchResult(paramString, item => {
-=======
-  doSearch = (searchElement, forcedValue) => {
-    let searchValue = "";
-    //checking force search
-    if (forcedValue === undefined) {
-      //operation goes here only when user starts typing
-      searchValue = searchElement.target.value;
-      this.setState({ isUserTyping: true });
-    } else {
-      searchValue = forcedValue;
-    }
-    searchValue = searchValue.toString();
-    GetSearchResult({ search: searchValue }, item => {
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
       if (item.success_result.success) {
         this.setState(
           {
             tableInfoData: SafeValue(item, "data.included", "object", []),
-<<<<<<< HEAD
             searchedValue: params.search,
             isUserSearching: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
           () => this.updateUrl(paramString)
-=======
-            searchedValue: searchValue,
-            isUserTyping: false,
-            pagination: SafeValue(item, "data.meta", "object", {})
-          },
-          () => console.log("state:", this.state)
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
         );
       }
     });
@@ -133,22 +94,14 @@ export default class Search extends React.Component {
         );
         rows.push(
           <tr key={idx}>
-<<<<<<< HEAD
             <td className={art}>
-=======
-            <td>
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
               {art === "authorization_roles" ? (
                 <FontAwesomeIcon icon={faKey} size="lg" color="grey" />
               ) : (
                 <FontAwesomeIcon icon={faChalkboard} size="lg" color="grey" />
               )}
             </td>
-<<<<<<< HEAD
             <td className="name">{name}</td>
-=======
-            <td>{name}</td>
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
           </tr>
         );
       });
@@ -171,7 +124,6 @@ export default class Search extends React.Component {
       for (let i = 1; i <= total_pages; i++) {
         generatedItems.push(
           <span
-<<<<<<< HEAD
             key={i}
             className="pageButton"
             onClick={() => current_page !== i && this.doPagination(null, i)}
@@ -179,18 +131,12 @@ export default class Search extends React.Component {
             <button className={classnames(current_page === i && "active")}>
               {i}
             </button>
-=======
-            className={classnames("pageButton", current_page === i && "active")}
-          >
-            {i}
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
           </span>
         );
       }
     }
     return generatedItems;
   };
-<<<<<<< HEAD
 
   updateUrl = newSearch => {
     this.props.history.push(newSearch);
@@ -250,62 +196,6 @@ export default class Search extends React.Component {
 
   render() {
     const { isUserSearching, pagination, searchedValue, sort } = this.state;
-=======
-  handleUrl = () => {};
-  doSort = () => {
-    GetSearchResult({}, item => {
-      if (item.success_result.success) {
-        console.log(item);
-        this.setState(
-          {
-            totalEntries: SafeValue(
-              item,
-              "data.meta.total_entries",
-              "number",
-              0
-            )
-          },
-          () => console.log(this.state)
-        );
-      }
-    });
-  };
-  doPaginate = type => {
-    let pagination_type = false;
-    switch (type) {
-      case "next":
-        break;
-      case "prev":
-        break;
-        break;
-      default:
-    }
-    if (!type) {
-      GetSearchResult({}, item => {
-        console.log(item);
-        if (item.success_result.success) {
-          this.setState(
-            {
-              totalEntries: SafeValue(
-                item,
-                "data.meta.total_entries",
-                "number",
-                0
-              )
-            },
-            () => console.log(this.state)
-          );
-        }
-      });
-    }
-  };
-  componentDidMount() {
-    this.doSearch(null, "");
-  }
-
-  render() {
-    const { isUserTyping, pagination, searchedValue } = this.state;
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
     return (
       <div className="Search">
         {/* Search Section Elements */}
@@ -331,7 +221,6 @@ export default class Search extends React.Component {
             <span
               className={classnames(
                 "searchButton-wrapper",
-<<<<<<< HEAD
                 !isUserSearching && "active"
               )}
             >
@@ -340,16 +229,6 @@ export default class Search extends React.Component {
                 onClick={() => this.doSearch(null, { search: searchedValue })}
               >
                 {isUserSearching ? <Spinner /> : "SUCHEN"}
-=======
-                !isUserTyping && "active"
-              )}
-            >
-              <button
-                disabled={isUserTyping}
-                onClick={() => this.doSearch(null, searchedValue)}
-              >
-                {isUserTyping ? <Spinner /> : "SUCHEN"}
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
               </button>
             </span>
           </div>
@@ -375,7 +254,6 @@ export default class Search extends React.Component {
                 <thead>
                   <tr>
                     <th>Art</th>
-<<<<<<< HEAD
                     <th onClick={() => this.doSort("label")} className="sort">
                       Name{" "}
                       {sort === "asc" ? (
@@ -383,15 +261,6 @@ export default class Search extends React.Component {
                       ) : (
                         <FontAwesomeIcon icon={faSortUp} size="1x" />
                       )}
-=======
-                    <th>
-                      Name{" "}
-                      <FontAwesomeIcon
-                        icon={faSortDown}
-                        size="1x"
-                        color="whitesmoke"
-                      />
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
                     </th>
                   </tr>
                 </thead>
@@ -399,10 +268,7 @@ export default class Search extends React.Component {
               </Table>
               <div className="tablePagination-section">
                 <span
-<<<<<<< HEAD
                   onClick={() => this.doPagination("prev")}
-=======
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
                   className={classnames(
                     "prev",
                     "navigation",
@@ -416,10 +282,7 @@ export default class Search extends React.Component {
                   {this.generatePaginationItems()}
                 </div>
                 <span
-<<<<<<< HEAD
                   onClick={() => this.doPagination("next")}
-=======
->>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
                   className={classnames(
                     "prev",
                     "navigation",
