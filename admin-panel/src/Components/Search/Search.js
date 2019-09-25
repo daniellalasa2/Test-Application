@@ -64,7 +64,6 @@ export default class Search extends React.Component {
       paramString = UpdateParams(params, window.location.search);
     }
     this.setState({ isUserSearching: true });
-    console.log(paramString);
     GetSearchResult(paramString, item => {
       if (item.success_result.success) {
         this.setState(
@@ -95,14 +94,14 @@ export default class Search extends React.Component {
         );
         rows.push(
           <tr key={idx}>
-            <td>
+            <td className={art}>
               {art === "authorization_roles" ? (
                 <FontAwesomeIcon icon={faKey} size="lg" color="grey" />
               ) : (
                 <FontAwesomeIcon icon={faChalkboard} size="lg" color="grey" />
               )}
             </td>
-            <td>{name}</td>
+            <td className="name">{name}</td>
           </tr>
         );
       });
