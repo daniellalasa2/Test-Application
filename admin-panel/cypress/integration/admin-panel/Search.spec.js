@@ -128,16 +128,42 @@ context("Listing", () => {
     });
   });
   describe("Sorting functionality", () => {
-    it("Sort button works great and shows accurate result", () => {
-      cy.visit("/listing?search=h");
-      cy.get(".Search .tablePagination-section .pageButton-wrapper span").as(
-        "paginationElements"
+    it("Sort button works great and shows accurate result and updates Url sucessfuly", () => {
+      cy.visit("/listing?search=h&page[size]=10");
+      cy.get(".Search .dataInfoTable-section table thead .sort").as(
+        "sortButton"
       );
       //If a pagination element was clicked , Would it take .active class ?
-      cy.get("@paginationElements")
-        .eq(2)
-        .click();
-      cy.url().should("include", "?search=h&page[size]=10&page[number]=3");
+      cy.get("@sortButton").click();
+      cy.request({
+        qs: {
+          search: "h",
+          "page[size]": "10",
+          sort_direction: "desc",
+          sort_type: "label"
+        },
+        ...reqOptions
+      })
+        .its("body")
+        .as("sortResult");
+      cy.get("@sortResult").then(resp => {
+        if (resp.included) {
+          const type = resp.included[0].type;
+          const label = resp.included[0].attributes.label;
+          cy.get(
+            ".Search .dataInfoTable-section table tbody tr:first-child"
+          ).as("firstTableRow");
+          cy.get("@firstTableRow").find(`td.${type}`);
+          cy.get("@firstTableRow")
+            .find("td.name")
+            .contains(label);
+        }
+        //Url update after sorting
+        cy.url().should(
+          "include",
+          "?search=h&page[size]=10&sort_direction=desc&sort_type=label"
+        );
+      });
     });
   });
 });
