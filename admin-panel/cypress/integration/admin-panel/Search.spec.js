@@ -5,34 +5,44 @@ const reqOptions = {
     "content-type": "application/json"
   }
 };
-context("Search", () => {
+context("Listing", () => {
   describe("Page Load", () => {
     it("Component loaded successfuly and default search result displayed", () => {
+      //Does component and default search result display?
       cy.visit("/listing");
       cy.contains("Admin Tool");
       cy.url().should("include", "?search=&page[size]=10");
     });
   });
-  describe("Search flow", () => {
+  describe("Search functionality and flow", () => {
     beforeEach(function() {
       //visit the page every each test units
       cy.visit("/listing");
     });
     it("Search box type behaviour is accurate and the result was filled successfuly into table", () => {
+      //Does typing into search fields works?
       cy.get(".searchField-box .searchField")
         .type("p")
         .should("have.value", "p");
+      // does search key word and page[size]=10 constant key word pushed into url field ?
       cy.request({ qs: { search: "p", "page[size]": "10" }, ...reqOptions })
         .its("body")
         .as("searchResult");
+      //Is returned result from server same as data that generated in table info ?
       cy.get("@searchResult").then(resp => {
         if (resp.included) {
           const api_length = resp.included.length;
           const type = resp.included[0].type;
           const label = resp.included[0].attributes.label;
-          cy.log(api_length);
+          const resultCount = resp.meta.total_entries;
+          //Result count checking
+          cy.get(".Search .dataInfoTable-section .resultCount").contains(
+            resultCount
+          );
+          //table rows generating check
           cy.get(".Search .dataInfoTable-section table tbody tr").as("rows");
           cy.get("@rows").should("have.length", api_length);
+          //table value inside td's checking
           cy.get("@rows").find(`td.${type}`);
           cy.get("@rows")
             .find("td.name")
@@ -41,42 +51,93 @@ context("Search", () => {
       });
     });
     it("Url updated based on user search phrase", () => {
+      //Does Url of the page update successfuly after every success search result?
       cy.get(".searchField-box .searchField").type("per");
       cy.url().should("include", "?search=per");
     });
-    // it("Pagination elements generated sucessfuly after search", () => {
-    //   cy.visit("/listing");
-    //   cy.get(".searchField-box .searchField").type("per");
-
-    // });
   });
 
-  //check total search result count
-  describe("Table Info", () => {
-    it("table info rows load successfuly", () => {
-      cy.visit("/listing");
-      // https://localhost:3000/listing
-      //.resultCount must contains api dada
-      cy.request(reqOptions).as("getList");
-      cy.get("@getList").should($res => {
-        //   cy.get(".Search .dataInfoTable-section .resultCount").contains();
+  describe("Pagination functionality", () => {
+    it("All pagination elements generates successfuly based on search result", () => {
+      cy.visit("/listing?search=p&page[size]=10");
+      cy.request({ qs: { search: "p", "page[size]": "10" }, ...reqOptions })
+        .its("body")
+        .as("searchResult");
+      cy.get("@searchResult").then(resp => {
+        if (resp.meta) {
+          const totalPages = resp.meta.total_pages;
+          const currentPage = resp.meta.current_page;
+          cy.get(
+            ".Search .tablePagination-section .pageButton-wrapper span"
+          ).as("paginationElements");
+          cy.get("@paginationElements").should("have.length", totalPages);
+          cy.get("@paginationElements")
+            .find(".active")
+            .contains(currentPage);
+        }
       });
     });
-    //check generated table info rows
-    it("Generated table info rows are correct", () => {
-      cy.visit("/listing");
-
-      // cy.get("@getRows").should($res => {
-      cy.get(".Search .dataInfoTable-section table tbody tr").then(tr => {
-        const listingCount = Cypress.$(tr).length;
-        cy.request(reqOptions)
-          .its("body.included")
-          .should($i => {
-            expect($i).to.have.length(listingCount);
-          });
+    it("Pagination buttons work great", () => {
+      cy.visit("/listing?search=p&page[size]=10");
+      //select all span pagination elements
+      cy.get(".Search .tablePagination-section .pageButton-wrapper span").as(
+        "paginationElements"
+      );
+      //If a pagination element was clicked , Would it take .active class ?
+      cy.get("@paginationElements")
+        .eq(2) //child counting starts from 0
+        .click()
+        .then($span => {
+          cy.get($span)
+            .find("button")
+            .should("have.class", "active");
+        });
+      //
+      //grap result of server with page[number] param
+      cy.request({
+        qs: { search: "p", "page[size]": "10", "page[number]": "3" },
+        ...reqOptions
+      })
+        .its("body")
+        .as("searchResult");
+      cy.get("@searchResult").then(resp => {
+        if (resp.included) {
+          const type = resp.included[0].type;
+          const label = resp.included[0].attributes.label;
+          cy.get(
+            ".Search .dataInfoTable-section table tbody tr:first-child"
+          ).as("firstTableRow");
+          cy.get("@firstTableRow").find(`td.${type}`);
+          cy.get("@firstTableRow")
+            .find("td.name")
+            .contains(label);
+        }
       });
-      //   cy.get(".Search .dataInfoTable-section .resultCount").contains();
-      //   });
+    });
+
+    it("Url updates successfuly rely on page number", () => {
+      cy.visit("/listing?search=h");
+      cy.get(".Search .tablePagination-section .pageButton-wrapper span").as(
+        "paginationElements"
+      );
+      //If a pagination element was clicked , Would it take .active class ?
+      cy.get("@paginationElements")
+        .eq(2)
+        .click();
+      cy.url().should("include", "?search=h&page[size]=10&page[number]=3");
+    });
+  });
+  describe("Sorting functionality", () => {
+    it("Sort button works great and shows accurate result", () => {
+      cy.visit("/listing?search=h");
+      cy.get(".Search .tablePagination-section .pageButton-wrapper span").as(
+        "paginationElements"
+      );
+      //If a pagination element was clicked , Would it take .active class ?
+      cy.get("@paginationElements")
+        .eq(2)
+        .click();
+      cy.url().should("include", "?search=h&page[size]=10&page[number]=3");
     });
   });
 });
