@@ -28,6 +28,7 @@ body {
       font-size: 1em;
       margin-right: -2em;
     }
+<<<<<<< HEAD
     & .searchButton-wrapper {
       position: relative;
       font-size: 1em;
@@ -35,6 +36,37 @@ body {
         & button {
           cursor: pointer;
           background-color: rgba(255, 255, 255, 0.3);
+=======
+    & .searchField-box {
+      width: 65%;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      & span.searchIcon-wrapper {
+        position: relative;
+        font-size: 1em;
+        margin-right: -2em;
+      }
+      & .searchButton-wrapper {
+        position: relative;
+        font-size: 1em;
+        &.active:hover {
+          & button {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.3);
+          }
+        }
+        & button {
+          background-color: transparent;
+          border: none;
+          font-size: 1em;
+          font-weight: bold;
+          margin-left: -100px;
+          color: $lightgrey;
+          padding: 13px;
+          outline: none;
+          border-radius: 1px;
+>>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
         }
       }
       & button {
@@ -123,9 +155,12 @@ body {
             color: $white;
             font-size: 14px;
             font-weight: bold;
+<<<<<<< HEAD
             &.sort:hover {
               cursor: pointer;
             }
+=======
+>>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
           }
           & td {
             color: $dimgrey;
@@ -170,6 +205,7 @@ body {
             }
           }
           & .pageButton-wrapper {
+<<<<<<< HEAD
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -195,6 +231,19 @@ body {
                   background-color: $white;
                   box-shadow: 0 3px 6px -2px #6f6f6f;
                 }
+=======
+            & span.pageButton {
+              border-radius: 50%;
+              margin: auto 5px;
+              padding: 10px 14px;
+              &:not(.active):hover {
+                background-color: rgba(255, 255, 255, 0.6);
+                cursor: pointer;
+              }
+              &.active {
+                background-color: $white;
+                box-shadow: 0 3px 6px -2px #6f6f6f;
+>>>>>>> 7ccd0bf1d2cc01765fbfba369bcc659ee2143924
               }
             }
           }
