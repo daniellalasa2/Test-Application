@@ -39,15 +39,12 @@ var errorHandler = statusCode => {
   return result;
 };
 
-var GetSearchResult = (params, callback) => {
+var GetSearchResult = (paramString, callback) => {
   axios({
-    url: Config.BASE_URL,
+    url: Config.BASE_URL + paramString,
     method: "GET",
     headers: {
       ..._api.header
-    },
-    params: {
-      ...params
     }
   })
     .then(res => {

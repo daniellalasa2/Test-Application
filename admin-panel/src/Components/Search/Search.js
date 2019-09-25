@@ -39,6 +39,7 @@ export default class Search extends React.Component {
 
   doSearch = (searchElement, params = {}) => {
     const { pageSize } = this.state;
+    let paramString = "";
     //checking force search
     if (searchElement !== null) {
       //operation goes here only when user starts typing
@@ -46,6 +47,8 @@ export default class Search extends React.Component {
     }
     if (params.search !== undefined) {
       params = { search: params.search };
+      paramString = UpdateParams(params, {});
+      this.setState({ sort: "asc" });
     } else {
       const searchValue = SafeValue(
         this.urlParser(window.location.search),
@@ -57,9 +60,11 @@ export default class Search extends React.Component {
         search: searchValue,
         ...params
       };
+      paramString = UpdateParams(params, window.location.search);
     }
     this.setState({ isUserSearching: true });
-    GetSearchResult({ ...params, "page[size]": pageSize }, item => {
+    console.log(paramString);
+    GetSearchResult(paramString, item => {
       if (item.success_result.success) {
         this.setState(
           {
@@ -68,7 +73,7 @@ export default class Search extends React.Component {
             isUserSearching: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
-          () => this.updateUrl(params)
+          () => this.updateUrl(paramString)
         );
       }
     });
@@ -133,8 +138,7 @@ export default class Search extends React.Component {
     return generatedItems;
   };
 
-  updateUrl = params => {
-    const newSearch = UpdateParams(params, window.location.search);
+  updateUrl = newSearch => {
     this.props.history.push(newSearch);
   };
   doSort = type => {
