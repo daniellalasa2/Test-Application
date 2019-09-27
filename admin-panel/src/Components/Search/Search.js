@@ -25,6 +25,7 @@ export default class Search extends React.Component {
       tableInfoData: [],
       isUserSearching: false,
       searchPhrase: "",
+      pageSize: 10,
       pagination: {
         current_page: 1,
         next_page: null,
@@ -170,7 +171,8 @@ export default class Search extends React.Component {
         pagination = page;
     }
     this.doSearch(null, {
-      "page[number]": pagination
+      "page[number]": pagination,
+      "page[size]": 10
     });
   };
   urlParser = url => {

@@ -11,7 +11,6 @@ context("Listing", () => {
       //Does component and default search result display?
       cy.visit("/listing");
       cy.contains("Admin Tool");
-      cy.url().should("include", "?search=&page[size]=10");
     });
   });
   describe("Search functionality and flow", () => {
