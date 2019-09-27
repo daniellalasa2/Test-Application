@@ -1,4 +1,10 @@
-function UpdateParams(paramsObj, urlSearchParams) {
+/*******
+
+This function gives a param object as first argument and param string as second argument
+and update second argument params with first one then return a Url search string
+
+********/
+function UpdateAndReturnAUrlString(paramsObj, urlSearchParams) {
   let updatedParams = {};
   const urlParser = url => {
     const params = new URLSearchParams(url);
@@ -13,7 +19,7 @@ function UpdateParams(paramsObj, urlSearchParams) {
   //convert obj to url parameters
   var str = "";
   for (var key in updatedParams) {
-    if (str != "") {
+    if (str !== "") {
       str += "&";
     }
     str += key + "=" + encodeURIComponent(updatedParams[key]);
@@ -21,4 +27,4 @@ function UpdateParams(paramsObj, urlSearchParams) {
   return "?" + str;
 }
 
-export default UpdateParams;
+export default UpdateAndReturnAUrlString;

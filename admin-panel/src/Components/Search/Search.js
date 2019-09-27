@@ -15,7 +15,7 @@ import { GetSearchResult, SafeValue } from "../ApiHandler/ApiHandler";
 import Spinner from "../Tools/Spinner/Spinner";
 import Header from "../Layout/Header";
 import classnames from "classnames";
-import UpdateParams from "../Tools/UpdateParams/UpdateParams";
+import UpdateAndReturnAUrlString from "../Tools/UpdateParams/UpdateParams";
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
@@ -24,44 +24,43 @@ export default class Search extends React.Component {
       sort: "asc",
       tableInfoData: [],
       isUserSearching: false,
-      pageSize: 10,
+      searchPhrase: "",
       pagination: {
         current_page: 1,
         next_page: null,
         prev_page: null,
         total_entries: 0,
         total_pages: 1
-      }
+      },
+      staticUrlParams: { "page[size]": 10 }
     };
     this.searchInput = React.createRef();
   }
   //if you send a value to this function as second argument this operation called force search
 
   doSearch = (searchElement, params = {}) => {
-    const { pageSize } = this.state;
+    const { staticUrlParams, sort } = this.state,
+      { search } = window.location,
+      urlSearchPhrase = params.search
+        ? params.search
+        : SafeValue(this.urlParser(search), "search", "string", ""),
+      urlSort = params.sort_direction ? params.sort_direction : sort;
     let paramString = "";
-    //checking force search
-    if (searchElement !== null) {
+    //If user starts typing into search bar
+    if (SafeValue(searchElement, "", "object", false)) {
       //operation goes here only when user starts typing
       params.search = searchElement.target.value;
+      params = { search: params.search, ...staticUrlParams };
+      paramString = UpdateAndReturnAUrlString(params, "");
     }
-    if (params.search !== undefined) {
-      params = { search: params.search, "page[size]": pageSize };
-      paramString = UpdateParams(params, {});
-      this.setState({ sort: "asc" });
-    } else {
-      const searchValue = SafeValue(
-        this.urlParser(window.location.search),
-        "search",
-        "string",
-        ""
-      );
+    //Other situtations
+    else {
       params = {
-        search: searchValue,
         ...params,
-        "page[size]": pageSize
+        ...staticUrlParams
       };
-      paramString = UpdateParams(params, window.location.search);
+      this.searchInput.current.value = urlSearchPhrase;
+      paramString = UpdateAndReturnAUrlString(params, search);
     }
     this.setState({ isUserSearching: true });
     GetSearchResult(paramString, item => {
@@ -70,6 +69,7 @@ export default class Search extends React.Component {
           {
             tableInfoData: SafeValue(item, "data.included", "object", []),
             searchedValue: params.search,
+            sort: urlSort,
             isUserSearching: false,
             pagination: SafeValue(item, "data.meta", "object", {})
           },
@@ -154,18 +154,10 @@ export default class Search extends React.Component {
       default:
         break;
     }
-
-    this.setState({ sort: sort }, () => {
-      this.doSearch(null, { sort_direction: sort, sort_type: type });
-    });
+    this.doSearch(null, { sort_direction: sort, sort_type: type });
   };
   doPagination = (type, page) => {
-    let {
-      current_page,
-      next_page,
-      prev_page,
-      total_pages
-    } = this.state.pagination;
+    let { next_page, prev_page } = this.state.pagination;
     let pagination;
     switch (type) {
       case "next":
@@ -189,13 +181,12 @@ export default class Search extends React.Component {
     }
     return paramsObj;
   };
-
   componentDidMount() {
     this.doSearch(null, this.urlParser(window.location.search));
   }
 
   render() {
-    const { isUserSearching, pagination, searchedValue, sort } = this.state;
+    const { isUserSearching, pagination, sort, searchPhrase } = this.state;
     return (
       <div className="Search">
         {/* Search Section Elements */}
@@ -226,25 +217,25 @@ export default class Search extends React.Component {
             >
               <button
                 disabled={isUserSearching}
-                onClick={() => this.doSearch(null, { search: searchedValue })}
+                onClick={() => this.doSearch()}
               >
                 {isUserSearching ? <Spinner /> : "SUCHEN"}
               </button>
             </span>
           </div>
           <div className="addNewRecord-box">
-            <a
+            <span
               className="addNewRecord"
               onClick={() => this.props.history.push("/addnewrecord")}
             >
               +
-            </a>
+            </span>
           </div>
         </Header>
 
         {/* Body Section */}
         <div className="searchBody-section">
-          <div className="menu-section">menu section</div>
+          <div className="menu-section">Filter Section</div>
           <div className="contentBody-section">
             <div className="dataInfoTable-section">
               <span className="resultCount">
