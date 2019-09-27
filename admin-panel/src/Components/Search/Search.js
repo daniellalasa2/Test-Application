@@ -158,8 +158,9 @@ export default class Search extends React.Component {
     this.doSearch(null, { sort_direction: sort, sort_type: type });
   };
   doPagination = (type, page) => {
-    let { next_page, prev_page } = this.state.pagination;
-    let pagination;
+    const { pageSize } = this.state;
+    let { next_page, prev_page } = this.state.pagination,
+      pagination;
     switch (type) {
       case "next":
         pagination = next_page;
@@ -172,7 +173,7 @@ export default class Search extends React.Component {
     }
     this.doSearch(null, {
       "page[number]": pagination,
-      "page[size]": 10
+      "page[size]": pageSize
     });
   };
   urlParser = url => {
